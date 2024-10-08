@@ -1,7 +1,7 @@
 import connection from '../database/db.js';
-import getAgendaById from '../functions/get.js';
-import updateAgendaById from '../functions/update.js';
-import deleteAgendaById from '../functions/delete.js';
+import { Agenda } from '../model/agenda.js';
+
+const agendaModel = new Agenda();
 
 describe('Testes para getAgendaById', () => {
     beforeAll(async () => {
@@ -13,8 +13,13 @@ describe('Testes para getAgendaById', () => {
         await connection.end(); // Encerra a Conexão com o BD
     });
 
+    test('Verificar a existencia do agendamento', async () => {
+        const agenda = await agendaModel.getAgendaById(999);
+        expect(agenda).toBeUndefined();
+    });
+
     test('1 - Deve retornar a agenda pelo ID', async () => {
-        const agenda = await getAgendaById(1);
+        const agenda = await agendaModel.getAgendaById(1);
         expect(agenda).toHaveProperty('nome_agenda', 'Cezar Nogueira');
         expect(agenda).toHaveProperty('tel_agenda', '(75) 98808-0909');
         expect(agenda).toHaveProperty('email_agenda', 'cezar@email.com');
@@ -23,13 +28,13 @@ describe('Testes para getAgendaById', () => {
 
     test('1.1 - Verificar se GET responde em menos de 200ms', async () => {
         console.time('Tempo Inicial de execução');
-        await getAgendaById(1);
+        await agendaModel.getAgendaById(1);
         console.timeEnd('Tempo Final de execução');
     });
 
     test('2 - Deve atualizar os dados da agenda pelo ID', async () => {
         // Atualizar os dados da agenda diretamente
-        await updateAgendaById(1, {
+        await agendaModel.updateAgendaById(1, {
             nome_agenda: 'Carlos Silva',
             tel_agenda: '(75) 98888-1234',
             email_agenda: 'carlos@email.com',
@@ -37,7 +42,7 @@ describe('Testes para getAgendaById', () => {
         });
     
         // Verificar se os dados foram atualizados corretamente
-        const agenda = await getAgendaById(1);
+        const agenda = await agendaModel.getAgendaById(1);
         expect(agenda).toHaveProperty('nome_agenda', 'Carlos Silva');
         expect(agenda).toHaveProperty('tel_agenda', '(75) 98888-1234');
         expect(agenda).toHaveProperty('email_agenda', 'carlos@email.com');
@@ -46,7 +51,7 @@ describe('Testes para getAgendaById', () => {
 
     test('2.1 - Verificar se UPDATE responde em menos de 200ms', async () => {
         console.time('Tempo Inicial de execução');
-        await updateAgendaById(1, {
+        await agendaModel.updateAgendaById(1, {
             nome_agenda: 'Carlos Silva',
             tel_agenda: '(75) 98888-1234',
             email_agenda: 'carlos@email.com',
@@ -57,21 +62,16 @@ describe('Testes para getAgendaById', () => {
 
     test('3 - Deve deletar a agenda pelo ID', async () => {
         // Chamar a função de delete
-        await deleteAgendaById(1);
+        await agendaModel.deleteAgendaById(1);
 
         // Verificar se a agenda foi realmente deletada
-        const agendaDelete = await getAgendaById(1);
+        const agendaDelete = await agendaModel.getAgendaById(1);
         expect(agendaDelete).toBeUndefined(); // Ou null, dependendo da implementação da sua função get
     });
 
     test('3.1 - Verificar se DELETE responde em menos de 200ms', async () => {
         console.time('Tempo Inicial de execução');
-        await deleteAgendaById(1);
+        await agendaModel.deleteAgendaById(1);
         console.timeEnd('Tempo Final de execução');
-    });
-
-    test('4 - Verifica a existencia da agenda', async () => {
-        const agenda = await getAgendaById(999);
-        expect(agenda).toBeUndefined();
     });
 });
