@@ -27,9 +27,15 @@ describe('Testes para getAgendaById', () => {
     });
 
     test('1.1 - Verificar se GET responde em menos de 200ms', async () => {
-        console.time('Tempo Inicial de execução');
+        const inicio = performance.now();
+
         await agendaModel.getAgendaById(1);
-        console.timeEnd('Tempo Final de execução');
+
+        const fim = performance.now();
+
+        const duracao = fim - inicio;
+
+        console.log(`Tempo do Get: ${duracao}`);
     });
 
     test('2 - Deve atualizar os dados da agenda pelo ID', async () => {
